@@ -4,7 +4,6 @@ from requests.exceptions import ReadTimeout, ConnectionError
 
 from tools.formatBytes import format_bytes
 from tools.formatDuration import format_duration
-
 from plugins.bigo.main import getPlaylist, getStreamData
 from plugins.bigo.verify import concurrentVerify
 
@@ -35,7 +34,8 @@ def downloadStream(instanceId, user, site):
         now = time.strftime("%Y-%m-%d_%H-%M", time.localtime())
       output_filename = nickname + '-' + siteId + '-' + now + '-bigo.ts'
       output_path = 'downloads/Bigo/' + nickname + '/' + output_filename
-  
+
+
   while True:
       try:
         base_url = m3u8Url.rsplit('/', 1)[0] + '/'
@@ -60,7 +60,8 @@ def downloadStream(instanceId, user, site):
               output_filename = nickname + '-' + siteId + '-' + now + '-bigo.ts'
               output_path = 'downloads/Bigo/' + nickname + '/' + output_filename
               continue
-          with open(output_path, 'ab') as output_file:
+
+        with open(output_path, 'ab') as output_file:
           for new_segment_line in new_segment_lines:
             segment_url = urljoin(base_url, new_segment_line)
             if segment_url not in segment_urls:
