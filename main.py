@@ -1,13 +1,7 @@
 import argparse
 import os
 
-from plugins.afreeca.main import main as afreecaMain
-from plugins.pandatv.main import main as pandaMain
-from plugins.pandatv.verify import checkUser as pandaVerify
 from plugins.bigo.main import main as bigoLive
-from plugins.kick.main import main as kickMain
-from plugins.tt.main import main as ttMain
-from plugins.twitch.main import main as twitchMain
 from plugins.concurrent.main import main as concurrentMain
 
 # qualities::::
@@ -35,19 +29,8 @@ def main(args):
     username = input('Enter username:\n')
   if args.concurrent is True:
     concurrentMain()
-  elif args.mode == 'afreeca':
-    afreecaMain(args.from_start, username, pwd)
-  elif args.mode == 'panda':
-    if pandaVerify(username):
-      pandaMain(username)
   elif args.mode == 'bigo':
     bigoLive(username)
-  elif args.mode == 'kick':
-    kickMain(username)
-  elif args.mode == 'tiktok':
-    ttMain(username)
-  elif args.mode == 'twitch':
-    twitchMain(username)
   else:
     print('Invalid mode')
 
