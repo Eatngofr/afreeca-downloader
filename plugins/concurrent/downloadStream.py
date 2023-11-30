@@ -5,12 +5,6 @@ from requests.exceptions import ReadTimeout, ConnectionError
 from tools.formatBytes import format_bytes
 from tools.formatDuration import format_duration
 
-from plugins.afreeca.verify import concurrentVerify as verifyAfreeca
-from plugins.afreeca.getPlaylist import getUserData as getAfreecaUserData, getVideoPlaylist as getAfreecaPlaylist
-
-# from plugins.panda.verify import concurrentVerify as verifyPanda, getPlaylist as getPandaPlaylist
-from plugins.pandatv.verify import concurrentVerify as verifyPanda, getPlaylist as getPandaPlaylist
-
 from plugins.bigo.main import getPlaylist, getStreamData
 from plugins.bigo.verify import concurrentVerify
 
@@ -22,22 +16,6 @@ def downloadStream(instanceId, user, site):
   
   segment_urls = set()
 
-  if 'afreeca' in site:
-    usernameList[instanceId] = [site, user, '', '', '', '']
-
-    if verifyAfreeca(user) is True:
-      file_size = 0
-      start_time = time.time()
-      m3u8Url = getAfreecaPlaylist(user, '')
-      username, nickname, station_no = getAfreecaUserData(user)
-      if os.path.exists('downloads/Afreeca/' + user) == False:
-        os.makedirs('downloads/Afreeca/' + user)
-
-      now = time.strftime("%Y-%m-%d_%H:%M", time.localtime())
-      if platform.system() == 'Windows':
-        now = time.strftime("%Y-%m-%d_%H-%M", time.localtime())
-      output_filename = user + '-' + station_no + '-' + now + '-afreeca.ts'
-      output_path = 'downloads/Afreeca/' + user + '/' + output_filename
   if 'bigo' in site:
     usernameList[instanceId] = [site, user, '', '', '', '']
 
@@ -57,26 +35,7 @@ def downloadStream(instanceId, user, site):
         now = time.strftime("%Y-%m-%d_%H-%M", time.localtime())
       output_filename = nickname + '-' + siteId + '-' + now + '-bigo.ts'
       output_path = 'downloads/Bigo/' + nickname + '/' + output_filename
-  if 'panda' in site:
-    usernameList[instanceId] = [site, user, '', '', '', '']
-    pandaVerify = verifyPanda(user)
-    if pandaVerify == 'Err19':
-      usernameList[instanceId] = [site, user, '', 'Err19', 'Err19', 'Err19']
-      exit(1)
-    elif pandaVerify is True:
-      file_size = 0
-      start_time = time.time()
-      m3u8Url = getPandaPlaylist(user)
-      if os.path.exists('downloads/PandaTV/' + user) == False:
-        os.makedirs('downloads/PandaTV/' + user)
-
-      now = time.strftime("%Y-%m-%d_%H:%M", time.localtime())
-      if platform.system() == 'Windows':
-        now = time.strftime("%Y-%m-%d_%H-%M", time.localtime())
-      output_filename = user + '-' + now + '-panda.ts'
-      output_path = 'downloads/PandaTV/' + user + '/' + output_filename
-
-
+  
   while True:
       try:
         base_url = m3u8Url.rsplit('/', 1)[0] + '/'
@@ -90,17 +49,6 @@ def downloadStream(instanceId, user, site):
         if '.ts' not in playlist_content.lower():
           
           usernameList[instanceId] = [site, user, '', 'Offline', 'Offline', 'Offline']
-          if 'afreeca' in site:
-            if verifyAfreeca(user) is True:
-              file_size = 0
-              start_time = time.time()
-              m3u8Url = getPlaylist(user)
-              now = time.strftime("%Y-%m-%d_%H:%M", time.localtime())
-              if platform.system() == 'Windows':
-                now = time.strftime("%Y-%m-%d_%H-%M", time.localtime())
-              output_filename = user + '-' + getStationNo(user,'') + '-' + now + '-afreeca.ts'
-              output_path = 'downloads/Afreeca/' + user + '/' + output_filename
-              continue
           if 'bigo' in site:
             if concurrentVerify(user) is True:
               file_size = 0
@@ -112,19 +60,7 @@ def downloadStream(instanceId, user, site):
               output_filename = nickname + '-' + siteId + '-' + now + '-bigo.ts'
               output_path = 'downloads/Bigo/' + nickname + '/' + output_filename
               continue
-          if 'panda' in site:
-            if verifyPanda(user) is True:
-              file_size = 0
-              start_time = time.time()
-              m3u8Url = getPandaPlaylist(user)
-              now = time.strftime("%Y-%m-%d_%H:%M", time.localtime())
-              if platform.system() == 'Windows':
-                now = time.strftime("%Y-%m-%d_%H-%M", time.localtime())
-              output_filename = user + '-' + now + '-panda.ts'
-              output_path = 'downloads/PandaTV/' + user + '/' + output_filename
-              continue
-
-        with open(output_path, 'ab') as output_file:
+          with open(output_path, 'ab') as output_file:
           for new_segment_line in new_segment_lines:
             segment_url = urljoin(base_url, new_segment_line)
             if segment_url not in segment_urls:
